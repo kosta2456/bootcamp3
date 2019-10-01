@@ -12,6 +12,8 @@ module.exports.init = function() {
   mongoose.connect(config.db.uri, { useNewUrlParser: true });
     mongoose.set('useCreateIndex', true);
     mongoose.set('useFindAndModify', false);
+   
+
 
   //initialize app
   var app = express();
@@ -23,7 +25,8 @@ module.exports.init = function() {
   app.use(bodyParser.json());
 
   /* serve static files - see http://expressjs.com/en/starter/static-files.html */
-  app.use('/', express.static(__dirname + '/../../client'));
+  app.use('/', express.static(__dirname + 'client'));
+  app.use('/', express.static(__dirname + 'public'));
 
 /* The next three middleware are important to the API that we are bulding */
 
@@ -32,8 +35,9 @@ module.exports.init = function() {
      use the listings router middleware for requests to the api 
      check the variables list above
   */
-  app.use('/api/listings');
-
+ app.use('/api/listings', listingsRouter, function(req, res) {
+  res.send(req.results);
+});
 
    /* Request Handler for coordinates
       This is a server wrapper around Open Cage Data Geocoding API to get latitude + longitude coordinates from address */
@@ -52,7 +56,9 @@ module.exports.init = function() {
       The path.resolve() method returns a string and resolves a sequence of paths or path segments into an absolute path.
       If no path segments are passed, path.resolve() will return the absolute path of the current working directory.
    */
-   //res.sendFile(path.resolve(...));
+   res.sendFile(path.resolve('./client/index.html'));
+
+
   });
   
   return app;
